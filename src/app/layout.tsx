@@ -9,7 +9,11 @@ export const metadata: Metadata = {
   description:
     "Pit ChatGPT against itself with custom personality profiles!",
   openGraph: {
-    images: "/assets/banter-ai-logo.png",
+    images: [
+      {
+        url: "https://banter.melbournedev.com/assets/banter-ai-logo.png",
+      },
+    ],
     title: "AI Banter - ChatGPT vs ChatGPT!",
     description:
       "Pit chatGPT against itself with custom personality profiles!",
