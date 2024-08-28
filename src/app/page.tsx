@@ -16,6 +16,8 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [message, setMessage] = useState("");
   const [chatSettings, setChatSettings] = useState(settings);
+  const [showGetStartedMessage, setShowGetStartedMessage] =
+    useState(true);
 
   const startChat = async () => {
     var messageList = [];
@@ -35,6 +37,12 @@ export default function Home() {
       );
       return;
     }
+    if (message === "") {
+      alert("Please enter a message to start the chat");
+      return;
+    }
+    setShowGetStartedMessage(false);
+
     const data = await fetch("/api/start-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -64,11 +72,11 @@ export default function Home() {
     }
   };
   return (
-    <div className="w-[1200px] m-auto pb-10">
+    <div className="max-w-[1200px] min-w-[800px] m-auto pb-10">
       <div className="flex items-center justify-center p-5 space-x-2">
         <input
           type="text"
-          placeholder="Start Convo Here..."
+          placeholder="Get the conversation started..."
           className="input input-bordered w-full max-w-xs "
           onChange={(e) => setMessage(e.target.value)}
           value={message}
@@ -76,12 +84,19 @@ export default function Home() {
         <button className="btn btn-outline" onClick={startChat}>
           Start
         </button>
-        <button
-          className="btn btn-outline"
-          onClick={() => window.settings_modal.showModal()}
-        >
-          <SettingsIcon />
-        </button>
+        <div className="relative">
+          <button
+            className="btn btn-outline"
+            onClick={() => window.settings_modal.showModal()}
+          >
+            <SettingsIcon />
+          </button>
+          {showGetStartedMessage && (
+            <span className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 whitespace-nowrap">
+              ⬅️ Enter an OpenAI API key to get started!
+            </span>
+          )}
+        </div>
         <SettingsModal
           settings={chatSettings}
           setSettings={setChatSettings}

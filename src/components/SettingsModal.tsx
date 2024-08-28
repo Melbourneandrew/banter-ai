@@ -4,9 +4,29 @@ export default function SettingsModal(props: any) {
   return (
     <dialog id="settings_modal" className="modal">
       <div className="modal-box flex flex-col w-11/12 max-w-6xl">
-        <h3 className="font-bold text-xl mb-3">Settings!</h3>
+        <h3 className="font-bold text-xl mb-3">
+          Settings!{" "}
+          <span className="font-normal text-lg">
+            (Click out to save)
+          </span>
+        </h3>
         <div className="mb-2">
-          <p>Number of messages</p>
+          <p className="font-bold">OpenAI API Key</p>
+          <input
+            type="text"
+            placeholder="Type here"
+            className="input input-bordered w-full max-w-xs"
+            value={props.settings.openai_api_key}
+            onChange={(e) => {
+              props.setSettings({
+                ...props.settings,
+                openai_api_key: e.target.value,
+              });
+            }}
+          />
+        </div>
+        <div className="mb-2">
+          <p className="font-bold">Number of messages</p>
           <input
             type="text"
             placeholder="Type here"
@@ -22,22 +42,7 @@ export default function SettingsModal(props: any) {
           />
         </div>
         <div className="mb-2">
-          <p>OpenAI API Key</p>
-          <input
-            type="text"
-            placeholder="Type here"
-            className="input input-bordered w-full max-w-xs"
-            value={props.settings.openai_api_key}
-            onChange={(e) => {
-              props.setSettings({
-                ...props.settings,
-                openai_api_key: e.target.value,
-              });
-            }}
-          />
-        </div>
-        <div className="mb-2">
-          <p>Model</p>
+          <p className="font-bold">Model</p>
           <input
             type="text"
             placeholder="Type here"
@@ -52,7 +57,7 @@ export default function SettingsModal(props: any) {
           />
         </div>
         <div className="mb-2">
-          <p>Left Side Name</p>
+          <p className="font-bold">Left Side Name</p>
           <input
             type="text"
             placeholder="Type here"
@@ -67,7 +72,7 @@ export default function SettingsModal(props: any) {
           />
         </div>
         <div className="mb-2">
-          <p>Right Side Name</p>
+          <p className="font-bold">Right Side Name</p>
           <input
             type="text"
             placeholder="Type here"
@@ -82,7 +87,9 @@ export default function SettingsModal(props: any) {
           />
         </div>
         <div className="mb-2">
-          <p>Conversation starter system messsage</p>
+          <p className="font-bold">
+            Conversation starter system messsage
+          </p>
           <textarea
             className="textarea textarea-bordered w-full"
             placeholder="Enter prompt..."
@@ -103,7 +110,9 @@ export default function SettingsModal(props: any) {
           ></textarea>
         </div>
         <div className="mb-2">
-          <p>Conversation starter user message prefix</p>
+          <p className="font-bold">
+            Conversation starter user message prefix
+          </p>
           <textarea
             className="textarea textarea-bordered w-full"
             placeholder="Enter prompt..."
@@ -124,7 +133,9 @@ export default function SettingsModal(props: any) {
           ></textarea>
         </div>
         <div className="mb-2">
-          <p>Conversation Holding System Message</p>
+          <p className="font-bold">
+            Conversation Holding System Message
+          </p>
           <textarea
             className="textarea textarea-bordered w-full"
             placeholder="Enter prompt..."
@@ -145,7 +156,9 @@ export default function SettingsModal(props: any) {
           ></textarea>
         </div>
         <div className="mb-2">
-          <p>Conversation Ending System Message</p>
+          <p className="font-bold">
+            Conversation Ending System Message
+          </p>
           <textarea
             className="textarea textarea-bordered w-full"
             placeholder="Enter prompt..."
@@ -166,7 +179,9 @@ export default function SettingsModal(props: any) {
           ></textarea>
         </div>
         <div className="mb-2">
-          <p>Left Side Personality Details</p>
+          <p className="font-bold">
+            Left Side Personality Details
+          </p>
           <textarea
             className="textarea textarea-bordered w-full"
             placeholder="Enter prompt..."
@@ -183,7 +198,9 @@ export default function SettingsModal(props: any) {
           ></textarea>
         </div>
         <div className="mb-2">
-          <p>Right Side Personality Details</p>
+          <p className="font-bold">
+            Right Side Personality Details
+          </p>
           <textarea
             className="textarea textarea-bordered w-full"
             placeholder="Enter prompt..."
