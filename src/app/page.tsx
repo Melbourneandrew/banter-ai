@@ -1,113 +1,141 @@
-import Image from 'next/image'
+/* eslint-disable @next/next/no-img-element */
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+import { settings, validateOpenAIKey } from "./settings";
+import SettingsIcon from "@/components/SettingsIcon";
+import SettingsModal from "@/components/SettingsModal";
+
+type ChatMessage = {
+  role: string;
+  content: string;
+};
+declare const window: any;
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [message, setMessage] = useState("");
+  const [chatSettings, setChatSettings] = useState(settings);
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+  const startChat = async () => {
+    var messageList = [];
+    setMessages([]);
+    console.log(chatSettings);
+    if (chatSettings.openai_api_key === "") {
+      alert(
+        "Please enter an OpenAI API Key in the settings menu"
+      );
+      return;
+    }
+    if (
+      validateOpenAIKey(chatSettings.openai_api_key) === false
+    ) {
+      alert(
+        "The OpenAI API Key you entered is invalid. Please enter a valid key in the settings menu"
+      );
+      return;
+    }
+    const data = await fetch("/api/start-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: message,
+        settings: chatSettings,
+      }),
+    });
+    const response = await data.json();
+    console.log(response);
+    setMessages([response.message]);
+    messageList.push(response.message);
+    for (let i = 0; i < chatSettings.numberOfMessages; i++) {
+      console.log(messageList);
+      const data = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: messageList,
+          settings: chatSettings,
+        }),
+      });
+      const response = await data.json();
+      console.log(response);
+      setMessages(response.messages);
+      messageList = response.messages;
+    }
+  };
+  return (
+    <div className="w-[1200px] m-auto pb-10">
+      <div className="flex items-center justify-center p-5 space-x-2">
+        <input
+          type="text"
+          placeholder="Start Convo Here..."
+          className="input input-bordered w-full max-w-xs "
+          onChange={(e) => setMessage(e.target.value)}
+          value={message}
+        />
+        <button className="btn btn-outline" onClick={startChat}>
+          Start
+        </button>
+        <button
+          className="btn btn-outline"
+          onClick={() => window.settings_modal.showModal()}
+        >
+          <SettingsIcon />
+        </button>
+        <SettingsModal
+          settings={chatSettings}
+          setSettings={setChatSettings}
         />
       </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      {/*For some reason, I need to put blank chat bubbles in before list rendering or it looks wrong*/}
+      <div className="chat chat-start opacity-0 h-0">
+        <div className="chat-image avatar">
+          <div className="w-10 rounded-full"></div>
+        </div>
+        <div className="chat-header">
+          <time className="text-xs opacity-50"></time>
+        </div>
+        <div className="chat-bubble"></div>
+        <div className="chat-footer opacity-50"></div>
       </div>
-    </main>
-  )
+      <div className="chat chat-end opacity-0 h-0">
+        <div className="chat-image avatar">
+          <div className="w-10 rounded-full"></div>
+        </div>
+        <div className="chat-header"></div>
+        <div className="chat-bubble"></div>
+        <div className="chat-footer opacity-50"></div>
+      </div>
+      {messages.map((message, index) => (
+        <div
+          key={index}
+          className={`chat chat-${
+            message?.role === "assistant" ? "start" : "end"
+          }`}
+          // className={`chat chat-start`}
+        >
+          <div className="chat-image avatar">
+            <div className="w-14 rounded-full">
+              <img
+                src={
+                  message.role === "assistant"
+                    ? "/assets/evepfp.png"
+                    : "/assets/wallepfp.jpeg"
+                }
+                alt="Profile pic"
+              />
+            </div>
+          </div>
+          <div className="chat-header">
+            {message?.role === "assistant"
+              ? settings.leftSideName
+              : settings.rightSideName}
+          </div>
+          <div className="chat-bubble text-gray-300 text-lg p-4 px-5">
+            {message?.content}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
