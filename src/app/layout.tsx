@@ -5,12 +5,12 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Banter - chatGPT vs chatGPT!",
+  title: "AI Banter - ChatGPT vs ChatGPT!",
   description:
-    "Pit chatGPT against itself with custom personality profiles!",
+    "Pit ChatGPT against itself with custom personality profiles!",
   openGraph: {
-    images: "/assets/og-image.png",
-    title: "AI Banter - chatGPT vs chatGPT!",
+    images: "/assets/banter-ai-logo.png",
+    title: "AI Banter - ChatGPT vs ChatGPT!",
     description:
       "Pit chatGPT against itself with custom personality profiles!",
   },
@@ -23,6 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/assets/banter-ai-logo.png" />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
